@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>日報一覧</h2>
+
+<ul>
+    {% for report in reports %}
+    <li>
+        <a href="{% url 'report_detail' report.id %}">{{ report.title }}</a>
+        <small>作成日: {{ report.created_at }}</small>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_report' %}">日報を作成</a>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ report.title }}</h2>
+<p>作者: {{ report.author }}</p>
+<p>{{ report.content }}</p>
+<small>作成日: {{ report.created_at }}</small>
+<small>更新日: {{ report.updated_at }}</small>
+
+<a href="{% url 'edit_report' report.id %}">編集</a>
+<a href="{% url 'delete_report' report.id %}">削除</a>
+{% endblock %}

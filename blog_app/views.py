@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, RedirectView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -10,43 +11,37 @@ from .forms import ReportForm
 from .forms import BlogPostForm
 
 
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            # Save the user to the database
-            form.save()
-            # Redirect to the login page
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')
 
 
-def index_redirect(request):
-    if request.user.is_authenticated:
-        return redirect('blog_list')
-    else:
-        return redirect('login')
+class IndexRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return reverse_lazy('blog_list')
+        else:
+            return reverse_lazy('login')
 
 
-def blog_list(request):
-    posts = BlogPost.objects.all()
-    return render(request, 'blog_app/blog_list.html', {'posts': posts})
+class BlogListView(ListView):
+    model = BlogPost
+    template_name = 'blog_app/blog_list.html'
+    context_object_name = 'posts'
 
 
-@login_required
-def create_blog_post(request):
-    if request.method == 'POST':
-        form = BlogPostForm(request.POST)
-        if form.is_valid():
-            blog_post = form.save(commit=False)
-            blog_post.author = request.user
-            blog_post.save()
-            return redirect('blog_list')
-    else:
-        form = BlogPostForm()
-    return render(request, 'blog_app/create_blog_post.html', {'form': form})
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
+    model = BlogPost
+    form_class = BlogPostForm
+    template_name = 'blog_app/create_blog_post.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('blog_list')
 
 
 class ReportListView(ListView):
@@ -55,45 +50,44 @@ class ReportListView(ListView):
     context_object_name = 'reports'
 
 
-@login_required
-def report_detail(request, report_id):
-    report = Report.objects.get(id=report_id)
-    return render(request, 'report/report_detail.html', {'report': report})
+class ReportDetailView(LoginRequiredMixin, DetailView):
+    model = Report
+    template_name = 'report/report_detail.html'
+    context_object_name = 'report'
 
 
-@login_required
-def create_report(request):
-    if request.method == 'POST':
-        form = ReportForm(request.POST)
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.author = request.user
-            report.save()
-            return redirect('report_list')
-    else:
-        form = ReportForm()
-    return render(request, 'report/create_report.html', {'form': form})
+class ReportCreateView(LoginRequiredMixin, CreateView):
+    model = Report
+    form_class = ReportForm
+    template_name = 'report/create_report.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('report_list')
 
 
-@login_required
-def edit_report(request, report_id):
-    report = Report.objects.get(id=report_id)
-    if request.method == 'POST':
-        form = ReportForm(request.POST, instance=report)
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.author = request.user
-            report.save()
-            return redirect('report_detail', report_id=report.id)
-    else:
-        form = ReportForm(instance=report)
-    return render(request, 'report/edit_report.html', {'form': form})
+class ReportUpdateView(LoginRequiredMixin, UpdateView):
+    model = Report
+    form_class = ReportForm
+    template_name = 'report/edit_report.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('report_detail', kwargs={'pk': self.object.pk})
 
 
-@login_required
-def delete_report(request, report_id):
-    Report.objects.get(id=report_id).delete()
-    return redirect('report_list')
+class ReportDeleteView(LoginRequiredMixin, DeleteView):
+    model = Report
+    success_url = reverse_lazy('report_list')
+
+    def get(self, *args, **kwargs):  # Delete without confirmation
+        return self.post(*args, **kwargs)
 
 
 class UserListView(ListView):

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BlogListView, ReportListView, ReportDetailView, ReportCreateView, ReportUpdateView, ReportDeleteView, UserListView, UserDetailView, RegisterView, IndexRedirectView
+from .views import BlogListView, ReportListView, ReportDetailView, ReportCreateView, ReportUpdateView, ReportDeleteView, UserListView, UserDetailView, RegisterView, IndexRedirectView,EditUserProfileView
 
 urlpatterns = [
     path('', BlogListView.as_view(), name='blog_list'),  # ブログ一覧画面
@@ -10,8 +10,9 @@ urlpatterns = [
     path('report/<int:pk>/delete/', ReportDeleteView.as_view(), name='delete_report'),
     path('user/', UserListView.as_view(), name='user_list'),
     path('user/<int:pk>/', UserDetailView.as_view(), name='user_detail'),
-    path('register/', RegisterView.as_view(), name='register'),  # ユーザー登録
-    path('index_redirect/', IndexRedirectView.as_view(), name='index_redirect'),  # インデックスリダイレクト
+    path ('user/<int:pk>/edit/', EditUserProfileView.as_view(), name='edit_user_profile'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('index_redirect/', IndexRedirectView.as_view(), name='index_redirect'),
 
 
 ]

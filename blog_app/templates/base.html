@@ -13,6 +13,10 @@
         <a href="{% url 'blog_list' %}">ホーム</a>
         <a href="{% url 'report_list' %}">日報一覧</a>
         <a href="{% url 'user_list' %}">ユーザー一覧</a>
+        <a href="{% url 'user_detail' user.id %}">{{user.userprofile.nickname}}</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">ログアウト</a>
+        {% endif %}
     </nav>
 </header>
 

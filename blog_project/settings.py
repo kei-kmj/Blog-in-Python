@@ -125,3 +125,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/blog_list/'
+
+# メディアファイルの設定
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = '/media/'
+
+# メール送信の設定
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]

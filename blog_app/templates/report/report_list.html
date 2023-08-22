@@ -5,7 +5,9 @@
 
 <ul>
     {% for report in reports %}
-    <li>
+    <li><img src="{{ report.author.userprofile.avatar.url }}" alt="{{ report.author.userprofile.nickname }}"
+            width="50" height="50">
+        <a href="{% url 'user_detail' report.author.id %}"></a>
         <a href="{% url 'report_detail' report.id %}">{{ report.title }}</a>
         <a href="{% url 'user_detail' report.author.id %}">{{report.author.userprofile.nickname}}さん</a>の
         {{ report.report_date}}の日報

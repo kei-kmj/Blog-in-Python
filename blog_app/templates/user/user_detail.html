@@ -1,16 +1,26 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 <h2>User Details</h2>
+{% if user.userprofile.avatar %}
+<img src="{{ user.userprofile.avatar.url }}" alt="{{ user.username }}" width="50" height="50">
+{% else %}
+<img src="{% static 'default_avatar.png' %}" alt="Default avatar" width="50" height="50">
+{% endif %}
+
 <p>Username: {{ user.username }}</p>
 <p>Email: {{ user.email }}</p>
 <p>name: {{ user.userprofile.nickname|default:"No nickname" }}</p>
 <p>部署: {{ user.userprofile.department }} </p>
 <p>チーム: {{ user.userprofile.team }}</p>
 <p>役職：{{user.userprofile.position}}</p>
+<p>入社日：{{user.userprofile.joined_date}}</p>
+<p>勤続年数:{{user.userprofile.calc_tenure}}</p>
 
 
 {% if user == request.user %}
-    <a href="edit">編集</a>
+<a href="edit">編集</a>
 {% endif %}
 
 {% endblock %}

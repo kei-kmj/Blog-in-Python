@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import BlogListView, ReportListView, ReportDetailView, ReportCreateView, ReportUpdateView, ReportDeleteView, UserListView, UserDetailView, RegisterView, IndexRedirectView,EditUserProfileView
+from .views import RegisterView, IndexRedirectView, EditUserProfileView, UserDetailView, UserListView, \
+    ReportListView, ReportDetailView, ReportCreateView, ReportUpdateView, ReportDeleteView, BlogListView,\
+    MeetingListView, MeetingDetailView, MeetingCreateView, MeetingUpdateView, MeetingDeleteView
 
 urlpatterns = [
     path('', BlogListView.as_view(), name='blog_list'),  # ブログ一覧画面
@@ -13,6 +15,12 @@ urlpatterns = [
     path ('user/<int:pk>/edit/', EditUserProfileView.as_view(), name='edit_user_profile'),
     path('register/', RegisterView.as_view(), name='register'),
     path('index_redirect/', IndexRedirectView.as_view(), name='index_redirect'),
+    path('meeting/', MeetingListView.as_view(), name='meeting_list'),
+    path('meeting/<int:pk>/', MeetingDetailView.as_view(), name='meeting_detail'),
+    path('meeting/create/', MeetingCreateView.as_view(), name='create_meeting'),
+    path('meeting/<int:pk>/edit/', MeetingUpdateView.as_view(), name='edit_meeting'),
+    path('meeting/<int:pk>/delete/', MeetingDeleteView.as_view(), name='delete_meeting'),
+
 
 
 ]

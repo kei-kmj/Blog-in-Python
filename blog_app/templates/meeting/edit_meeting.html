@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>ミーティング編集</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <a href="{% url 'user_detail' meeting.user.id %}">
+        {% if meeting.user.userprofile.avatar %}
+        <img src="{{ meeting.user.userprofile.avatar.url }}" alt="{{ meeting.user.username }}" width="50">
+        {% else %}
+        <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+        {% endif %}
+    </a>
+
+    {{ form.user.userprofile.nickname|default:meeting.user.username }}
+    <p> * </p>
+    <a href="{% url 'user_detail' meeting.attendee.id %}">
+        {% if meeting.attendee.profile.avatar %}
+        <img src="{{ meeting.attendee.userprofile.avatar.url }}" alt="{{ meeting.attendee.username }}" width="50">
+        {% else %}
+        <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+        {% endif %}
+    </a>
+    {{ form.attendee.userprofile.nickname|default:meeting.attendee.username }}
+    <p>会議室: {{ form.meeting_room }}</p>
+
+    <p>日付: {{ form.date }}</p>
+    <p>開始時間: {{ form.start_time }}</p>
+    <p>終了時間: {{ form.end_time }}</p>
+
+
+    <button type="submit">保存</button>
+</form>
+
+{% endblock %}

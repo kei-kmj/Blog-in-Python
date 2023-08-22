@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>ミーティング一覧</h2>
+
+<ul>
+    {% for meeting in meetings %}
+    <li>
+        <a href="{% url 'user_detail' meeting.user.id %}">
+            {% if meeting.user.userprofile.avatar %}
+            <img src="{{ meeting.user.userprofile.avatar.url }}" alt="{{ meeting.user.username }}" width="50">
+            {% else %}
+            <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+            {% endif %}
+        </a>
+        <a href="{% url 'user_detail' meeting.user.id %}">
+            {{meeting.user.userprofile.nickname|default:meeting.user.username }}</a> ×
+
+
+        <a href="{% url 'user_detail' meeting.attendee.id %}">
+            {% if meeting.attendee.userprofile.avatar %}
+            <img src="{{ meeting.attendee.userprofile.avatar.url }}" alt="{{ meeting.attendee.username }}" width="50">
+            {% else %}
+            <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+            {% endif %}
+        </a>
+            <a href="{% url 'user_detail' meeting.attendee.id %}">
+            {{meeting.attendee.userprofile.nickname|default:meeting.attendee.username}}</a>
+        　{{ meeting.date }}　{{ meeting.start_time }}~{{ meeting.end_time }}
+        <a href="{% url 'meeting_detail' meeting.id %}">詳細</a>
+        <a href="{% url 'edit_meeting' meeting.id %}">編集</a>
+        <a href="{% url 'delete_meeting' meeting.id %}">削除</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_meeting' %}"> + </a>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h2>詳細</h2>
+
+<a href="{% url 'user_detail' meeting.user.id %}">
+    {% if meeting.user.userprofile.avatar %}
+    <img src="{{ meeting.user.userprofile.avatar.url }}" alt="{{ meeting.user.username }}" width="50">
+    {% else %}
+    <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+    {% endif %}
+</a>
+<a href="{% url 'user_detail' meeting.user.id %}">
+    {{meeting.user.userprofile.nickname|default:meeting.user.username }}</a> ×
+
+
+<a href="{% url 'user_detail' meeting.attendee.id %}">
+    {% if meeting.attendee.userprofile.avatar %}
+    <img src="{{ meeting.attendee.userprofile.avatar.url }}" alt="{{ meeting.attendee.username }}" width="50">
+    {% else %}
+    <img src="{% static 'default_avatar.png' %}" alt="デフォルトのアバター" width="50">
+    {% endif %}
+</a>
+<a href="{% url 'user_detail' meeting.attendee.id %}">
+    {{meeting.attendee.userprofile.nickname|default:meeting.attendee.username}}</a>
+<p>日時:{{meeting.date}} {{meeting.start_time}}～{{meeting.end_time}}</p>
+<p>場所:{{meeting.meeting_room}}</p>
+
+<a href="{% url 'edit_meeting' meeting.id %}">編集</a>
+<a href="{% url 'delete_meeting' meeting.id %}">削除</a>
+{% endblock %}
+

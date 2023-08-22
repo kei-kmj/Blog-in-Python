@@ -6,13 +6,10 @@ from django.views.generic import CreateView, RedirectView, UpdateView, DeleteVie
 from django.contrib.auth.models import User
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import BlogPost
-from .models import Report
-from .models import UserProfile
-from .forms import ReportForm
-from .forms import BlogPostForm
-from .forms import UserForm
-from .forms import UserProfileForm
+from datetime import date
+from .models import BlogPost, Report, Meeting
+from .forms import ReportForm, BlogPostForm, UserForm, UserProfileForm, MeetingForm
+from django.db.models import Q
 
 
 class RegisterView(CreateView):
@@ -46,6 +43,52 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog_list')
+
+
+class MeetingListView(ListView):
+    model = Meeting
+    template_name = 'meeting/meeting_list.html'
+    context_object_name = 'meetings'
+
+    def get_queryset(self):
+        user = self.request.user
+        return Meeting.objects.filter(Q(user=user) | Q(attendee=user))
+
+
+class MeetingCreateView(LoginRequiredMixin, CreateView):
+    model = Meeting
+    form_class = MeetingForm
+    template_name = 'meeting/create_meeting.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('meeting_detail', kwargs={'pk': self.object.pk})
+
+
+class MeetingDetailView(LoginRequiredMixin, DetailView):
+    model = Meeting
+    template_name = 'meeting/meeting_detail.html'
+    context_object_name = 'meeting'
+
+
+class MeetingUpdateView(LoginRequiredMixin, UpdateView):
+    model = Meeting
+    form_class = MeetingForm
+    template_name = 'meeting/edit_meeting.html'
+
+    def get_success_url(self):
+        return reverse_lazy('meeting_list')
+
+
+class MeetingDeleteView(LoginRequiredMixin, DeleteView):
+    model = Meeting
+    success_url = reverse_lazy('meeting_list')
+
+    def get(self, *args, **kwargs):  # Delete without confirmation
+        return self.post(*args, **kwargs)
 
 
 class ReportListView(ListView):
@@ -123,25 +166,16 @@ class EditUserProfileView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-    # model = UserProfile
-    # form_class = UserForm
-    # second_form_class = UserProfileForm
-    # template_name = 'user/edit_user_profile.html'
-    # success_url = reverse_lazy('user_detail')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.get_object()
         context['user_form'] = UserForm(instance=user)
         context['profileform'] = UserProfileForm(instance=user.userprofile)
         return context
-        # context['form2'] = self.second_form_class(instance=self.request.user)
-        # return context
-
 
     def form_valid(self, form):
         userform = UserForm(self.request.POST, instance=self.object)
-        profileform = UserProfileForm(self.request.POST, instance=self.object.userprofile)
+        profileform = UserProfileForm(self.request.POST, self.request.FILES, instance=self.object.userprofile)
 
         if userform.is_valid() and profileform.is_valid():
             userform.save()
@@ -149,5 +183,4 @@ class EditUserProfileView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return super().form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(userform=userform, profileform=profileform))
-
 

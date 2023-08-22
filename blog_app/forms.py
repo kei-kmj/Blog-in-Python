@@ -1,6 +1,6 @@
 from django import forms
 from .models import BlogPost
-from .models import Report
+from .models import Report, Meeting
 from django.contrib.auth.models import User
 from .models import UserProfile
 
@@ -35,6 +35,24 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    joined_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+
     class Meta:
         model = UserProfile
-        fields = ['nickname']
+        fields = ['nickname', 'department', 'team', 'position', 'avatar', 'joined_date']
+
+
+class MeetingForm(forms.ModelForm):
+    class Meta:
+        model = Meeting
+        fields = ['user', 'meeting_room', 'date', 'start_time', 'end_time', 'attendee']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'})
+        }
+
+
+
